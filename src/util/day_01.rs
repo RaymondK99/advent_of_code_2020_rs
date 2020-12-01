@@ -15,8 +15,7 @@ pub fn solve(input : String, part: Part) -> String {
 }
 
 fn build_k(list:Vec<u32>) -> Vec<bool> {
-    let mut k = Vec::with_capacity(2021);
-    k.resize_with(2021, || false);
+    let mut k = vec![false; 2021];
 
     list.iter()
         .filter(|n| **n <= 2020)
@@ -25,19 +24,19 @@ fn build_k(list:Vec<u32>) -> Vec<bool> {
     k
 }
 
-fn find_sum(start_index:usize, sum:usize, k:&Vec<bool>) -> (bool, usize, usize) {
+fn find_sum(start_index:usize, sum:usize, k:&Vec<bool>) -> Option<(usize, usize)> {
     for i in start_index..=sum as usize {
         if k[i] && k[sum-i] {
-            return (true, i, sum - i)
+            return Some((i, sum - i))
         }
     }
 
-    (false,0,0)
+    None
 }
 
 fn part1(list:Vec<u32>) -> String {
     let k = build_k(list);
-    let (_, a, b) = find_sum(0,2020, &k);
+    let ( a, b) = find_sum(0,2020, &k).unwrap();
 
     (a as u32 * b as u32).to_string()
 }
@@ -48,8 +47,9 @@ fn part2(list:Vec<u32>) -> String {
     for i in 0..2020 {
         if k[i] {
             // Is there a sum i + a + b = 2020 ?
-            let (found, a, b) = find_sum(i+1, 2020 - i, &k);
-            if found {
+            let res = find_sum(i+1, 2020 - i, &k);
+            if res.is_some() {
+                let (a,b) = res.unwrap();
                 //println!("Found {}, {}, {}", i, a, b);
                 return (a as u64 * b as u64 * i as u64).to_string()
             }
@@ -81,6 +81,13 @@ mod tests {
     }
 
     #[test]
+    fn test_part1() {
+        let input = include_str!("../../input_01.txt");
+
+        assert_eq!("787776", solve(input.to_string(), Part1));
+    }
+
+    #[test]
     fn test2() {
 
         let input = "1721
@@ -91,6 +98,13 @@ mod tests {
 1456";
 
         assert_eq!("241861950", solve(input.to_string(), Part2));
+    }
+
+    #[test]
+    fn test_part2() {
+        let input = include_str!("../../input_01.txt");
+
+        assert_eq!("262738554", solve(input.to_string(), Part2));
     }
 
 }
