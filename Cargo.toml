@@ -1,0 +1,8 @@
+[package]
+name = "advent_of_code_2020"
+version = "0.1.0"
+authors = ["raymondk <raymond.kalander@gmail.se>"]
+
+[dependencies]
+permute = "0.1.0"
+regex = "1"
