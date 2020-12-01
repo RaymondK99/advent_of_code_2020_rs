@@ -47,9 +47,7 @@ fn part2(list:Vec<u32>) -> String {
     for i in 0..2020 {
         if k[i] {
             // Is there a sum i + a + b = 2020 ?
-            let res = find_sum(i+1, 2020 - i, &k);
-            if res.is_some() {
-                let (a,b) = res.unwrap();
+            if let Some((a,b)) = find_sum(i+1, 2020 - i, &k) {
                 //println!("Found {}, {}, {}", i, a, b);
                 return (a as u64 * b as u64 * i as u64).to_string()
             }
