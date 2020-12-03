@@ -1,38 +1,32 @@
 use super::Part;
-use std::collections::HashMap;
 
 pub fn solve(input : String, part: Part) -> String {
-    let map = parse(input);
+    let map_tuple = parse(input);
 
     let result = match part {
-        Part::Part1 => part1(map),
-        Part::Part2 => part2(map)
+        Part::Part1 => part1(map_tuple),
+        Part::Part2 => part2(map_tuple)
     };
 
     format!("{}",result)
 }
 
 
-fn parse(input:String) -> HashMap<(usize,usize),char> {
-    let mut map = HashMap::new();
-
-    input.lines().enumerate()
-        .flat_map(move |(y,line)| line.chars().enumerate().map(move |(x,ch)| (x,y,ch)))
-        .for_each(|(x,y,ch) | {map.insert((x,y),ch);});
-
-    map
+fn parse(input:String) -> (usize, usize, Vec<char>) {
+    let height = input.lines().count();
+    let width = input.lines().into_iter().next().unwrap().len();
+    let map = input.lines().flat_map(move |line| line.chars()).collect();
+    (width, height, map)
 }
 
 
-fn calc_trees(incr_x:usize, incr_y:usize, map:&HashMap<(usize,usize),char>) -> u64 {
-    let width = map.iter().map(|(&(x,_),_)|x).max().unwrap()+1;
-    let height = map.iter().map(|(&(_,y),_)|y).max().unwrap()+1;
+fn calc_trees(width:usize, height:usize, incr_x:usize, incr_y:usize, map:&Vec<char>) -> u64 {
 
     let mut x = 0;
     let mut y = 0;
     let mut count = 0;
     while y < height {
-        let pos = map.get(&(x % width,y)).unwrap();
+        let pos = map.get( y*width + x % width).unwrap();
         if *pos == '#' {
             count += 1;
             //println!("{},{} is tree",x+1,y+1);
@@ -45,14 +39,14 @@ fn calc_trees(incr_x:usize, incr_y:usize, map:&HashMap<(usize,usize),char>) -> u
     count
 }
 
-fn part1(map:HashMap<(usize,usize),char>) -> u64 {
-    calc_trees(3,1,&map)
+fn part1(map_tuple:(usize, usize, Vec<char>)) -> u64 {
+    calc_trees(map_tuple.0, map_tuple.1, 3,1,&map_tuple.2)
 }
 
-fn part2(map:HashMap<(usize,usize),char>) -> u64 {
+fn part2(map_tuple:(usize, usize, Vec<char>)) -> u64 {
     let incr_list = [(1,1),(3,1),(5,1),(7,1),(1,2)];
     incr_list.iter()
-        .map( |(incr_x,incr_y)| calc_trees(*incr_x,*incr_y,&map))
+        .map( |(incr_x,incr_y)| calc_trees(map_tuple.0, map_tuple.1, *incr_x,*incr_y,&map_tuple.2))
         .fold(1,|acc, item| item * acc)
 
 }
