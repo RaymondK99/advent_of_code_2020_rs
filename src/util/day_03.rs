@@ -14,13 +14,13 @@ pub fn solve(input : String, part: Part) -> String {
 
 fn parse(input:String) -> (usize, usize, Vec<char>) {
     let height = input.lines().count();
-    let width = input.lines().into_iter().next().unwrap().len();
+    let width = input.lines().next().unwrap().len();
     let map = input.lines().flat_map(move |line| line.chars()).collect();
     (width, height, map)
 }
 
 
-fn calc_trees(width:usize, height:usize, incr_x:usize, incr_y:usize, map:&Vec<char>) -> u64 {
+fn calc_trees(width:usize, height:usize, incr_x:usize, incr_y:usize, map:&[char]) -> u64 {
 
     let mut x = 0;
     let mut y = 0;

@@ -7,7 +7,7 @@ pub fn solve(input : String, part: Part) -> String {
         Part::Part2 => part2(input),
     };
 
-    format!("{}",result)
+    result.to_string()
 }
 
 struct Passport {
@@ -18,18 +18,18 @@ impl Passport {
     fn parse(input:&str) -> Passport {
         let fields = input.split(|ch| ch == '\n' || ch == ' ').
             map(|field| {
-                let pair: Vec<&str> = field.split(":").collect();
+                let pair: Vec<&str> = field.split(':').collect();
                 (pair[0].to_string(),pair[1].to_string())
             }).collect();
 
-        Passport{fields:fields}
+        Passport{fields}
     }
 
     fn has_required_fields(&self) -> bool {
         let keys = ["byr","iyr","eyr","hgt","hcl","ecl","pid"];
         keys.iter()
-            .map(|key| self.fields.iter().find(|(k,_)| k.eq(key)).is_some())
-            .fold(true,|a,b| a && b)
+            .map(|key| self.fields.iter().any(|(k,_)| k.eq(key)))
+            .all(|a| a )
     }
 
     fn numeric_range(value:&str, min:i32, max:i32) -> bool {
@@ -48,26 +48,26 @@ impl Passport {
                 "ecl" => ["amb","blu","brn","gry","grn","hzl","oth"].contains(&value.as_str()),
                 "hgt" => (value.ends_with("cm") && value.len() == 5 && Passport::numeric_range(&value[0..3], 150, 193)) ||
                     (value.ends_with("in") && value.len() == 4 && Passport::numeric_range(&value[0..2], 59, 76)),
-                "hcl" => value.len() == 7 && value.starts_with("#") && value.chars().filter(|c|c.is_ascii_hexdigit()).count() == 6,
+                "hcl" => value.len() == 7 && value.starts_with('#') && value.chars().filter(|c|c.is_ascii_hexdigit()).count() == 6,
                 "pid" => value.len() == 9 && value.parse::<u64>().is_ok(),
                 "cid" => true,
                 _ => false
             }
-        }).fold(true, |a,b| a && b)
+        }).all(|a|a)
     }
 }
 
 
 
 fn part1(input:String) -> usize {
-    input.split("\n\n").into_iter()
+    input.split("\n\n")
         .map(|item| Passport::parse(item) )
         .filter( |passport| passport.has_required_fields())
         .count()
 }
 
 fn part2(input:String) -> usize {
-    input.split("\n\n").into_iter()
+    input.split("\n\n")
         .map(|item| Passport::parse(item) )
         .filter( |passport| passport.has_required_fields())
         .filter(|passport| passport.validate_fields())

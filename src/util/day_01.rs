@@ -6,12 +6,10 @@ pub fn solve(input : String, part: Part) -> String {
         .map(|line| line.parse().unwrap())
         .collect();
 
-    let result = match part {
+    match part {
         Part::Part1 => part1(numbers),
         Part::Part2 => part2(numbers)
-    };
-
-    format!("{}",result)
+    }
 }
 
 fn build_k(list:Vec<u32>) -> Vec<bool> {
@@ -24,7 +22,7 @@ fn build_k(list:Vec<u32>) -> Vec<bool> {
     k
 }
 
-fn find_sum(start_index:usize, sum:usize, k:&Vec<bool>) -> Option<(usize, usize)> {
+fn find_sum(start_index:usize, sum:usize, k:&[bool]) -> Option<(usize, usize)> {
     for i in start_index..=sum as usize {
         if k[i] && k[sum-i] {
             return Some((i, sum - i))
