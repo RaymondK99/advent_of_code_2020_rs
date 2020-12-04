@@ -48,7 +48,7 @@ impl Passport {
                 "ecl" => ["amb","blu","brn","gry","grn","hzl","oth"].contains(&value.as_str()),
                 "hgt" => (value.ends_with("cm") && value.len() == 5 && Passport::numeric_range(&value[0..3], 150, 193)) ||
                     (value.ends_with("in") && value.len() == 4 && Passport::numeric_range(&value[0..2], 59, 76)),
-                "hcl" => value.len() == 7 && value.starts_with('#') && value.chars().filter(|c|c.is_ascii_hexdigit()).count() == 6,
+                "hcl" => value.len() == 7 && value.starts_with('#') && value[1..].chars().all(|c| c.is_digit(10) || (c.is_ascii_hexdigit() && c.is_ascii_lowercase())),
                 "pid" => value.len() == 9 && value.parse::<u64>().is_ok(),
                 "cid" => true,
                 _ => false
