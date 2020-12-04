@@ -1,5 +1,4 @@
 use super::Part;
-use std::collections::{HashMap};
 
 pub fn solve(input : String, part: Part) -> String {
 
@@ -12,24 +11,25 @@ pub fn solve(input : String, part: Part) -> String {
 }
 
 struct Passport {
-    fields:HashMap<String,String>,
+    fields:Vec<(String,String)>,
 }
 
 impl Passport {
     fn parse(input:&str) -> Passport {
-        let mut fields:HashMap<String,String> = HashMap::new();
-        input.split(|ch| ch == '\n' || ch == ' ').
-            for_each(|field| {
+        let fields = input.split(|ch| ch == '\n' || ch == ' ').
+            map(|field| {
                 let pair: Vec<&str> = field.split(":").collect();
-                fields.insert(pair[0].to_string(),pair[1].to_string());
-            });
+                (pair[0].to_string(),pair[1].to_string())
+            }).collect();
 
         Passport{fields:fields}
     }
 
     fn has_required_fields(&self) -> bool {
         let keys = ["byr","iyr","eyr","hgt","hcl","ecl","pid"];
-        keys.iter().map(|key| self.fields.contains_key(&key.to_string())).fold(true,|a,b| a && b)
+        keys.iter()
+            .map(|key| self.fields.iter().find(|(k,_)| k.eq(key)).is_some())
+            .fold(true,|a,b| a && b)
     }
 
     fn numeric_range(value:&str, min:i32, max:i32) -> bool {
@@ -157,5 +157,5 @@ pid:3556412378 byr:2007";
 
         assert_eq!("224", solve(input.to_string(), Part2));
     }
-    
+
 }
