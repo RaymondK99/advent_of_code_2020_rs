@@ -14,10 +14,8 @@ pub fn solve(input : String, part: Part) -> String {
 fn convert_bitset(input:&str) -> usize {
     input.chars().rev()
         .map(|c| match c {
-            'B' => 1,
-            'R' => 1,
-            'L' => 0,
-            'F' => 0,
+            'B'|'R' => 1,
+            'L'|'F' => 0,
             _ => panic!("Illegal character")
         })
         .enumerate()
