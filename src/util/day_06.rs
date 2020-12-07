@@ -19,7 +19,6 @@ fn count_yes(input:String, acc:u32, acc_func:fn(u32,u32) -> u32) -> u32 {
         .sum()
 }
 
-
 fn part1(input:String) -> u32 {
     count_yes(input, 0,|a,b| a | b)
 }
