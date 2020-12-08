@@ -1,3 +1,5 @@
+extern crate regex;
+
 use std::io::prelude::*;
 use std::env;
 

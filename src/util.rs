@@ -5,7 +5,8 @@ mod day_04;
 mod day_05;
 mod day_06;
 mod day_07;
-
+mod day_08;
+mod boot_code;
 
 pub enum Part {
     Part1,
@@ -23,6 +24,7 @@ pub fn get_solution(day:u8, part:Part, input:String) -> String {
         5 => day_05::solve(input, part),
         6 => day_06::solve(input, part),
         7 => day_07::solve(input, part),
+        8 => day_08::solve(input, part),
         _ => panic!("..."),
     }
 
