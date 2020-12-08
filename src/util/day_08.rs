@@ -26,7 +26,7 @@ fn part2(input:String) -> i32 {
         if finished {
             return  acc;
         } else {
-            boot_code._reset();
+            boot_code.reset();
         }
     }
 }

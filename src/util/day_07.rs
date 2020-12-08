@@ -48,8 +48,7 @@ fn search_gold(rules:Vec<Rule>) -> usize {
     rules.iter().for_each(|rule| queue.push_back(rule));
     rules.iter().for_each(|rule| {rule_book.insert(rule.bag.clone(), rule);});
 
-    while !queue.is_empty() {
-        let current_rule = queue.pop_front().unwrap();
+    while let Some(current_rule) =  queue.pop_front() {
 
         if current_rule.bag.eq("shiny gold") {
             continue;

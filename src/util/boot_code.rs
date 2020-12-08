@@ -22,7 +22,7 @@ impl BootCode {
                     "acc" => Instruction::Acc(argument),
                     "jmp" => Instruction::Jmp(argument),
                     "nop" => Instruction::Nop(argument),
-                    _ => panic!("Uknown instruction {}",opcode),
+                    _ => panic!("Unknown instruction {}",opcode),
                 }
             }).collect();
 
@@ -30,7 +30,7 @@ impl BootCode {
         BootCode{accumulator:0,pc:0,opcodes:opcodes,history:vec![0;len],history_counter:0,permutation:0,prev_permutation:0}
     }
 
-    pub fn _reset(&mut self) {
+    pub fn reset(&mut self) {
         // Reverse permutation
         if self.permutation > 0 {
             self.reverse_permutation();
@@ -43,21 +43,21 @@ impl BootCode {
     }
 
     fn reverse_permutation(&mut self) {
-        self.permutation = self.prev_permutation.clone();
+        self.permutation = self.prev_permutation;
         self.permutate();
     }
 
     pub fn permutate(&mut self) {
-        self.prev_permutation = self.permutation.clone();
+        self.prev_permutation = self.permutation;
 
         loop {
-            match &self.opcodes[self.permutation.clone()] {
+            match &self.opcodes[self.permutation] {
                 Instruction::Jmp(arg) => {
-                    self.opcodes[self.permutation.clone()] = Nop(arg.clone());
+                    self.opcodes[self.permutation] = Nop(*arg);
                     break;
                 },
                 Instruction::Nop(arg) => {
-                    self.opcodes[self.permutation.clone()] = Jmp(arg.clone());
+                    self.opcodes[self.permutation] = Jmp(*arg);
                     break;
                 },
                 _ => {
@@ -69,8 +69,7 @@ impl BootCode {
     }
 
     fn execute_instruction(&mut self) {
-        let pc = self.pc.clone();
-        let instruction = self.opcodes[pc];
+        let instruction = self.opcodes[self.pc];
 
         // Run instruction
         match &instruction {
@@ -83,13 +82,13 @@ impl BootCode {
 
         // Add to history
         self.history_counter += 1;
-        self.history[pc] = self.history_counter.clone();
+        self.history[self.pc] = self.history_counter;
 
 
         // Perform pc increment
         self.pc = match instruction {
             Instruction::Jmp(argument) => {
-                (self.pc.clone() as i32 + argument) as usize
+                (self.pc as i32 + argument) as usize
             },
             _ => &self.pc+1,
         };
@@ -97,12 +96,12 @@ impl BootCode {
 
     pub fn run_until_inf_loop_or_finished(&mut self) -> (bool,i32) {
         // Run until we found an already executed instruction
-        while self.pc != self.opcodes.len() && (self.history_counter == 0 || self.history[self.pc.clone()] == 0) {
-            //println!("pc = {}, {:?}",self.pc, self.opcodes[self.pc.clone()]);
+        while self.pc != self.opcodes.len() && (self.history_counter == 0 || self.history[self.pc] == 0) {
+            //println!("pc = {}, {:?}",self.pc, self.opcodes[self.pc]);
             self.execute_instruction();
         }
 
-        (self.pc == self.opcodes.len(), self.accumulator.clone())
+        (self.pc == self.opcodes.len(), self.accumulator)
     }
 }
 
