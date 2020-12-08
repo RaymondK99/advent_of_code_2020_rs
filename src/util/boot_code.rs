@@ -7,6 +7,7 @@ pub struct BootCode {
     history_counter:usize,
     history:Vec<usize>,
     permutation:usize,
+    prev_permutation:usize,
 }
 
 impl BootCode {
@@ -26,10 +27,14 @@ impl BootCode {
             }).collect();
 
         let len = opcodes.len();
-        BootCode{accumulator:0,pc:0,opcodes:opcodes,history:vec![0;len],history_counter:0,permutation:0}
+        BootCode{accumulator:0,pc:0,opcodes:opcodes,history:vec![0;len],history_counter:0,permutation:0,prev_permutation:0}
     }
 
     pub fn _reset(&mut self) {
+        // Reverse permutation
+        if self.permutation > 0 {
+            self.reverse_permutation();
+        }
         // Clear history
         self.history.iter_mut().for_each(|item| *item = 0);
         self.history_counter = 0;
@@ -37,8 +42,14 @@ impl BootCode {
         self.accumulator = 0;
     }
 
-    pub fn permutate(&mut self,p:usize) {
-        self.permutation = p;
+    fn reverse_permutation(&mut self) {
+        self.permutation = self.prev_permutation.clone();
+        self.permutate();
+    }
+
+    pub fn permutate(&mut self) {
+        self.prev_permutation = self.permutation.clone();
+
         loop {
             match &self.opcodes[self.permutation.clone()] {
                 Instruction::Jmp(arg) => {
@@ -54,6 +65,7 @@ impl BootCode {
                 }
             };
         }
+        self.permutation += 1;
     }
 
     fn execute_instruction(&mut self) {

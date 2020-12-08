@@ -20,17 +20,18 @@ fn part1(input:String) -> i32 {
 }
 
 fn part2(input:String) -> i32 {
-    for i in 0..input.lines().count() {
-        let mut boot_code = BootCode::parse_text_file(&input);
-        boot_code.permutate(i);
+    let mut boot_code = BootCode::parse_text_file(&input);
+    loop {
+        boot_code.permutate();
         let (finished,acc) = boot_code.run_until_inf_loop_or_finished();
 
         if finished {
             return  acc;
+        } else {
+            boot_code._reset();
         }
 
     }
-    1
 }
 
 #[cfg(test)]
