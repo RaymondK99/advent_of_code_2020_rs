@@ -11,8 +11,6 @@ pub fn solve(input : String, part: Part) -> String {
     result.to_string()
 }
 
-
-
 fn part1(input:String) -> i32 {
     let mut boot_code = BootCode::parse_text_file(&input);
     let (_,acc) = boot_code.run_until_inf_loop_or_finished();
@@ -30,7 +28,6 @@ fn part2(input:String) -> i32 {
         } else {
             boot_code._reset();
         }
-
     }
 }
 
@@ -87,8 +84,5 @@ acc +6";
         let res = part2(input.to_string());
         assert_eq!(1149,res);
     }
-
-
-
 
 }
