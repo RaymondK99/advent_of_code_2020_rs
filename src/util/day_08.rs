@@ -22,7 +22,7 @@ fn part1(input:String) -> i32 {
 fn part2(input:String) -> i32 {
     for i in 0..input.lines().count() {
         let mut boot_code = BootCode::parse_text_file(&input);
-        boot_code.permutate(i.clone());
+        boot_code.permutate(i);
         let (finished,acc) = boot_code.run_until_inf_loop_or_finished();
 
         if finished {
