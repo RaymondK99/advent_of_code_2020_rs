@@ -11,7 +11,7 @@ pub struct BootCode {
 }
 
 impl BootCode {
-    pub fn parse_text_file(input:&String) -> BootCode  {
+    pub fn parse_text_file(input:String) -> BootCode  {
 
         let opcodes:Vec<Instruction> = input.lines()
             .map(|line| {
@@ -26,8 +26,7 @@ impl BootCode {
                 }
             }).collect();
 
-        let len = opcodes.len();
-        BootCode{accumulator:0,pc:0,opcodes:opcodes,history:vec![0;len],history_counter:0,permutation:0,prev_permutation:0}
+        BootCode{accumulator:0,pc:0,history:vec![0; opcodes.len()],opcodes,history_counter:0,permutation:0,prev_permutation:0}
     }
 
     pub fn reset(&mut self) {
@@ -76,8 +75,8 @@ impl BootCode {
             Instruction::Acc(argument) => {
                 self.accumulator += argument;
             },
-            Instruction::Jmp(_argument) => {}
-            Instruction::Nop(_argument) => {}
+            Instruction::Jmp(_) => {}
+            Instruction::Nop(_) => {}
         };
 
         // Add to history
@@ -90,7 +89,7 @@ impl BootCode {
             Instruction::Jmp(argument) => {
                 (self.pc as i32 + argument) as usize
             },
-            _ => &self.pc+1,
+            _ => self.pc+1,
         };
     }
 

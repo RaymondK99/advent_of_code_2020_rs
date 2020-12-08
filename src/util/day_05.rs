@@ -40,7 +40,7 @@ fn part2(input:String) -> usize {
         .collect();
 
     // Sort it...
-    seats.sort();
+    seats.sort_unstable();
 
     *seats.iter()
         .enumerate()

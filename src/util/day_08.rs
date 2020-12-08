@@ -12,13 +12,13 @@ pub fn solve(input : String, part: Part) -> String {
 }
 
 fn part1(input:String) -> i32 {
-    let mut boot_code = BootCode::parse_text_file(&input);
+    let mut boot_code = BootCode::parse_text_file(input);
     let (_,acc) = boot_code.run_until_inf_loop_or_finished();
     acc
 }
 
 fn part2(input:String) -> i32 {
-    let mut boot_code = BootCode::parse_text_file(&input);
+    let mut boot_code = BootCode::parse_text_file(input);
     loop {
         boot_code.permutate();
         let (finished,acc) = boot_code.run_until_inf_loop_or_finished();
