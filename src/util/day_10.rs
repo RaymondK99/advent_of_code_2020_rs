@@ -32,7 +32,7 @@ fn part1(input:String) -> u64 {
 }
 
 
-fn connect(adapters:&Vec<u64>,cache:&mut HashMap<u64,u64>) -> u64 {
+fn connect(adapters:&[u64],cache:&mut HashMap<u64,u64>) -> u64 {
 
     // We reached the end
     if adapters.len() == 1 {
@@ -45,7 +45,7 @@ fn connect(adapters:&Vec<u64>,cache:&mut HashMap<u64,u64>) -> u64 {
     let mut index = 1;
     let mut count = 0;
     while index < adapters.len() &&  (adapters[index] - adapters[0]) < 4 {
-        let res = connect(&adapters[index..].to_vec(),cache);
+        let res = connect(&adapters[index..],cache);
         // Cache result in order to reuse it later
         cache.insert(adapters[index],res);
         index += 1;
@@ -59,11 +59,12 @@ fn part2(input:String) -> u64 {
     let mut adapters:Vec<u64> = input.lines().map(|line| line.parse().ok().unwrap()).collect();
     let mut cache = HashMap::new();
     adapters.sort_unstable();
-    
+
     let mut sum = 0;
-    while *adapters.first().unwrap() < 4 {
-        sum += connect(&adapters,&mut cache);
-        adapters.remove(0);
+    let mut index = 0;
+    while adapters[index] < 4 {
+        sum += connect(&adapters[index..],&mut cache);
+        index += 1;
     }
 
     sum
