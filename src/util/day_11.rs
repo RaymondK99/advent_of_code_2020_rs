@@ -1,5 +1,5 @@
 use super::Part;
-use std::collections::HashMap;
+use util::Part::{Part1, Part2};
 
 pub fn solve(input : String, part: Part) -> String {
 
@@ -11,117 +11,126 @@ pub fn solve(input : String, part: Part) -> String {
     result.to_string()
 }
 
+struct Seats {
+    locations:Vec<char>,
+    width:i32,
+    height:i32,
+    part:Part,
+}
 
-fn _map_as_str(map:&HashMap<(i32, i32),char>) -> String {
-    let max_y = map.keys().map(|&(_,y)| y).max().unwrap();
-    let max_x = map.keys().map(|&(x,_)| x).max().unwrap();
-    let mut s = String::new();
+impl Seats {
+    fn parse(input:&str,part:Part) -> Seats {
+        let height = input.lines().count() as i32;
+        let width = input.lines().into_iter().next().unwrap().chars().count() as i32;
+        let locations:Vec<char> = input.lines().flat_map(|line| line.chars()).collect();
 
-    for y in 0..=max_y {
-        for x in 0..=max_x {
-            s.push(*map.get(&(x,y)).unwrap());
-        }
-        s.push('\n');
+        Seats{locations,width,height,part}
     }
 
-    s
-}
-
-fn next_state(current:&HashMap<(i32,i32),char>,
-              next:&mut HashMap<(i32,i32),char>,
-              next_seat_state:fn(&HashMap<(i32,i32),char>,i32,i32) -> char ) -> bool {
-    let mut cnt = 0;
-    current.iter().for_each( |((x,y),ch)| {
-       let next_ch = next_seat_state(&current, *x,*y);
-        next.insert((*x, *y), next_ch);
-
-        if next_ch != *ch {
-            cnt += 1;
-        }
-    });
-
-    cnt > 0
-}
-
-fn get_next_seat_state_adjacent(map:&HashMap<(i32, i32),char>, x:i32, y:i32) -> char {
-    let occupied = get_adjacent_seats(&map, x, y).iter().filter(|&ch| *ch == '#').count();
-    let current = *map.get(&(x,y)).unwrap();
-    if current == 'L' && occupied == 0 {
-        '#'
-    } else if current == '#' && occupied >= 4 {
-        'L'
-    } else {
-        current
-    }
-}
-
-
-fn get_next_seat_state_visible(map:&HashMap<(i32, i32),char>, x:i32, y:i32) -> char {
-    let directions = vec![(-1,-1),(-1,0),(-1,1),(0,-1),(0,1),(1,-1),(1,0),(1,1)];
-
-    let occupied = directions.iter().map( |&(dx,dy)| visible_seat(&map, x,y,dx,dy))
-        .filter(|item| item.is_some())
-        .filter(|item| item.unwrap() == '#').count();
-
-
-    let current = *map.get(&(x,y)).unwrap();
-    if current == 'L' && occupied == 0 {
-        '#'
-    } else if current == '#' && occupied > 4 {
-        'L'
-    } else {
-        current
-    }
-}
-
-fn visible_seat(map:&HashMap<(i32, i32),char>,x:i32, y:i32,dx:i32, dy:i32) -> Option<char> {
-    let mut pos_x = x;
-    let mut pos_y = y;
-    loop {
-        pos_y += dy;
-        pos_x += dx;
-
-        if let Some(ch) = map.get(&(pos_x,pos_y)) {
-            if *ch == '.' {
-                continue;
-            } else {
-                return Some(*ch)
-            }
+    fn seat_at(&self, x:i32,y:i32) -> Option<char> {
+        if x < 0 || x >= self.width || y < 0 || y >= self.height {
+            None
         } else {
-            return None
+            let index = self.width as usize * y as usize + x as usize;
+            Some(self.locations[index])
         }
+    }
+
+    fn set_seat(&mut self, x:i32,y:i32, ch:char) -> bool {
+        let index = self.width as usize * y as usize + x as usize;
+        let prev = self.locations[index];
+        self.locations[index] = ch;
+        prev != ch
+    }
+
+    fn _to_string(&self) -> String {
+        let mut s = String::new();
+        for y in 0..self.height {
+            for x in 0..self.width {
+                s.push(self.seat_at(x,y).unwrap());
+            }
+            s.push('\n');
+        }
+        s
+    }
+
+    fn get_total_occupied(&self) -> usize {
+        self.locations.iter().filter(|&ch| *ch == '#').count()
+    }
+
+    fn get_occupied(&self,x:i32,y:i32) -> usize {
+        let directions = vec![(-1,-1),(-1,0),(-1,1),(0,-1),(0,1),(1,-1),(1,0),(1,1)];
+        let mut occupied = 0;
+        for (dx,dy) in directions {
+            let mut next_x = x;
+            let mut next_y = y;
+            loop {
+                next_x += dx;
+                next_y += dy;
+
+                if let Some(seat) = self.seat_at(next_x,next_y) {
+                    if seat == 'L' {
+                        break;
+                    } else if seat == '#' {
+                        occupied += 1;
+
+                        if occupied > 4 {
+                            return occupied;
+                        }
+                        break;
+                    } else if self.part == Part1 {
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+
+        occupied
+    }
+
+    fn get_next_state(&self, next:&mut Seats) -> bool {
+        let mut cnt = 0;
+        for y in 0..self.height {
+            for x in 0..self.width {
+                let current = self.seat_at(x,y).unwrap();
+                let occupied = self.get_occupied(x,y);
+
+                let next_seat_state = if current == 'L' && occupied == 0 {
+                    '#'
+                } else if current == '#' && (occupied >= 4 && self.part == Part1 || occupied > 4 && self.part == Part2 ) {
+                    'L'
+                } else {
+                    current
+                };
+
+                if next.set_seat(x,y,next_seat_state) {
+                    cnt += 1
+                }
+            }
+        }
+
+        cnt > 0
     }
 }
 
 
-fn get_adjacent_seats(map:&HashMap<(i32, i32),char>, x:i32, y:i32) -> Vec<char> {
-    let positions = vec![(x-1,y-1),(x-1,y),(x-1,y+1),(x,y-1),(x,y+1),(x+1,y-1),(x+1,y),(x+1,y+1)];
 
-    positions.iter()
-        .map(|&(x,y)| map.get(&(x,y)))
-        .filter( |item| item.is_some())
-        .map(|item| *item.unwrap())
-        .collect()
-}
 
-fn parse(input:&String) -> HashMap<(i32,i32),char> {
-    let mut map:HashMap<(i32,i32),char> = HashMap::new();
 
-    input.lines().enumerate()
-        .flat_map( |(y,line)| line.chars().enumerate().map(move |(x,ch)| (x,y,ch)))
-        .for_each(|(x,y,ch)| {map.insert((x as i32,y as i32),ch);});
-    map
-}
+
+
 
 
 fn part1(input:String) -> usize {
-    let mut map_a = parse(&input);
-    let mut map_b = map_a.clone();
+    let mut seats_a = Seats::parse(input.as_str(),Part1);
+    let mut seats_b = Seats::parse(input.as_str(),Part1);
 
     for i in 0..u64::max_value() {
         let updated = match i % 2 {
-            0 => next_state(&map_a, &mut map_b, get_next_seat_state_adjacent),
-            1 => next_state(&map_b, &mut map_a, get_next_seat_state_adjacent),
+            0 => seats_a.get_next_state(&mut seats_b),
+            1 => seats_b.get_next_state(&mut seats_a),
             _ => panic!("..."),
         };
 
@@ -130,19 +139,18 @@ fn part1(input:String) -> usize {
         }
     }
 
-    map_a.values().filter(|&ch| *ch == '#').count()
-
+    seats_a.get_total_occupied()
 }
 
 
 fn part2(input:String) -> usize {
-    let mut map_a = parse(&input);
-    let mut map_b = map_a.clone();
+    let mut seats_a = Seats::parse(input.as_str(),Part2);
+    let mut seats_b = Seats::parse(input.as_str(),Part2);
 
     for i in 0..u64::max_value() {
         let updated = match i % 2 {
-            0 => next_state(&map_a, &mut map_b,get_next_seat_state_visible),
-            1 => next_state(&map_b, &mut map_a,get_next_seat_state_visible),
+            0 => seats_a.get_next_state(&mut seats_b),
+            1 => seats_b.get_next_state(&mut seats_a),
             _ => panic!("..."),
         };
 
@@ -151,7 +159,7 @@ fn part2(input:String) -> usize {
         }
     }
 
-    map_a.values().filter(|&ch| *ch == '#').count()
+    seats_a.get_total_occupied()
 }
 
 #[cfg(test)]
@@ -178,6 +186,7 @@ L.LLLLL.LL";
         println!("{}",res);
         assert_eq!(37,res);
     }
+
 
 
     #[test]

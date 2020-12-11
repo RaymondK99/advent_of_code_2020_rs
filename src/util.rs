@@ -11,6 +11,7 @@ mod day_10;
 mod day_11;
 mod boot_code;
 
+#[derive(PartialEq,Copy, Clone)]
 pub enum Part {
     Part1,
     Part2,
