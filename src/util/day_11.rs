@@ -117,15 +117,8 @@ impl Seats {
 }
 
 
-
-
-
-
-
-
-
-fn part1(input:String) -> usize {
-    let mut seats_a = Seats::parse(input.as_str(),Part1);
+fn transform_until_stable(seats:Seats) -> usize {
+    let mut seats_a = seats;
     let mut seats_b = seats_a.clone();
 
     for i in 0..u64::max_value() {
@@ -143,24 +136,14 @@ fn part1(input:String) -> usize {
     seats_a.get_total_occupied()
 }
 
+fn part1(input:String) -> usize {
+    transform_until_stable(Seats::parse(input.as_str(),Part1))
+}
+
 
 fn part2(input:String) -> usize {
-    let mut seats_a = Seats::parse(input.as_str(),Part2);
-    let mut seats_b = seats_a.clone();
+    transform_until_stable(Seats::parse(input.as_str(),Part2))
 
-    for i in 0..u64::max_value() {
-        let updated = match i % 2 {
-            0 => seats_a.get_next_state(&mut seats_b),
-            1 => seats_b.get_next_state(&mut seats_a),
-            _ => panic!("..."),
-        };
-
-        if !updated {
-            break;
-        }
-    }
-
-    seats_a.get_total_occupied()
 }
 
 #[cfg(test)]
