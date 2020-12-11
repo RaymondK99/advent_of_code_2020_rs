@@ -11,6 +11,7 @@ pub fn solve(input : String, part: Part) -> String {
     result.to_string()
 }
 
+#[derive(Clone)]
 struct Seats {
     locations:Vec<char>,
     width:i32,
@@ -125,7 +126,7 @@ impl Seats {
 
 fn part1(input:String) -> usize {
     let mut seats_a = Seats::parse(input.as_str(),Part1);
-    let mut seats_b = Seats::parse(input.as_str(),Part1);
+    let mut seats_b = seats_a.clone();
 
     for i in 0..u64::max_value() {
         let updated = match i % 2 {
@@ -145,7 +146,7 @@ fn part1(input:String) -> usize {
 
 fn part2(input:String) -> usize {
     let mut seats_a = Seats::parse(input.as_str(),Part2);
-    let mut seats_b = Seats::parse(input.as_str(),Part2);
+    let mut seats_b = seats_a.clone();
 
     for i in 0..u64::max_value() {
         let updated = match i % 2 {
