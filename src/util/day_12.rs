@@ -72,14 +72,16 @@ fn turn_left(current_dir:char,degrees:i32) -> char {
     }
 }
 
-
+fn parse(input:String) -> Vec<(char,i32)> {
+    input.lines()
+        .map(|line| (line.chars().next().unwrap(), line[1..].parse().ok().unwrap()))
+        .collect()
+}
 
 fn part1(input:String) -> i32 {
     let start_pos = Pos{x:0,y:0};
-    let (ship_pos,_) = input.lines().fold(
-        (start_pos,'E'),|(ship_pos,current_dir),line|{
-            let ch = line.as_bytes()[0] as char;
-            let n:i32 = line[1..].parse().ok().unwrap();
+    let (ship_pos,_) = parse(input).iter().fold(
+        (start_pos,'E'),|(ship_pos,current_dir),&(ch,n)|{
             let action = match ch {
                 'F' => current_dir,
                 _ => ch,
@@ -104,11 +106,8 @@ fn part2(input:String) -> i32 {
     let waypoint_start_pos = Pos{x:10,y:-1};
     let ship_start_pos = Pos{x:0,y:0};
 
-    let (ship_pos,_) = input.lines().fold(
-        (ship_start_pos,waypoint_start_pos),|(ship_pos,wp_pos),line|{
-            let action = line.as_bytes()[0] as char;
-            let n:i32 = line[1..].parse().ok().unwrap();
-
+    let (ship_pos,_) = parse(input).iter().fold(
+        (ship_start_pos,waypoint_start_pos),|(ship_pos,wp_pos),&(action,n)|{
             match action {
                 'N' => (ship_pos,wp_pos.north(n) ),
                 'S' => (ship_pos,wp_pos.south(n) ),
