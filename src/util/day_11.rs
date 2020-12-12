@@ -59,7 +59,7 @@ impl Seats {
         self.locations.iter().filter(|&ch| *ch == '#').count()
     }
 
-    fn get_occupied(&self,x:i32,y:i32) -> usize {
+    fn get_occupied(&self,x:i32,y:i32,hint:usize) -> usize {
         let directions = vec![(-1,-1),(-1,0),(-1,1),(0,-1),(0,1),(1,-1),(1,0),(1,1)];
         let mut occupied = 0;
         for (dx,dy) in directions {
@@ -75,7 +75,7 @@ impl Seats {
                     } else if seat == '#' {
                         occupied += 1;
 
-                        if occupied > 4 {
+                        if occupied > hint {
                             return occupied;
                         }
                         break;
@@ -96,7 +96,14 @@ impl Seats {
         for y in 0..self.height {
             for x in 0..self.width {
                 let current = self.seat_at(x,y).unwrap();
-                let occupied = self.get_occupied(x,y);
+                let occupied = if current == 'L' {
+                    // Only require at least 1 occupied seat
+                    self.get_occupied(x,y,0)
+                } else if current == '#' {
+                    self.get_occupied(x,y,4)
+                } else {
+                    0
+                };
 
                 let next_seat_state = if current == 'L' && occupied == 0 {
                     '#'
@@ -172,6 +179,23 @@ L.LLLLL.LL";
     }
 
 
+    //#[test]
+    fn test_part1() {
+        let input = include_str!("../../input_11.txt");
+
+        let res = part1(input.to_string());
+        println!("{}",res);
+        assert_eq!(2354,res);
+    }
+
+    //#[test]
+    fn test_part2() {
+        let input = include_str!("../../input_11.txt");
+
+        let res = part2(input.to_string());
+        println!("{}",res);
+        assert_eq!(2072,res);
+    }
 
     #[test]
     fn test2() {
