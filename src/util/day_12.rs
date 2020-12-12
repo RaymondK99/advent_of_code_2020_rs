@@ -1,5 +1,7 @@
 use super::Part;
 
+const DIRECTIONS:[char;4] = ['N','W','S','E'];
+
 pub fn solve(input : String, part: Part) -> String {
 
     let result = match part {
@@ -55,12 +57,10 @@ impl Pos {
     }
 }
 
-
 fn turn_right(current_dir:char,degrees:i32) -> char {
-    let directions = vec!['N','W','S','E'];
-    let index = directions.iter().enumerate().find(|&(_,ch)| *ch == current_dir).unwrap().0 as i32;
+    let index = DIRECTIONS.iter().enumerate().find(|&(_,ch)| *ch == current_dir).unwrap().0 as i32;
     let next_index = (index - degrees/90 + 4) % 4;
-    directions[next_index as usize]
+    DIRECTIONS[next_index as usize]
 }
 
 fn turn_left(current_dir:char,degrees:i32) -> char {
