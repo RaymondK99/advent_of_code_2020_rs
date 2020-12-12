@@ -46,7 +46,7 @@ fn find_sum(numbers:Vec<u64>,sum:u64) -> Vec<u64> {
     vec![]
 }
 
-fn part1(input:&String, problem_size:usize) -> u64 {
+fn part1(input:&str, problem_size:usize) -> u64 {
     let mut input_numbers:VecDeque<u64> = input.lines().map(|line| line.parse().ok().unwrap()).collect();
     let mut preamable:VecDeque<u64> = VecDeque::new();
 

@@ -9,6 +9,7 @@ mod day_08;
 mod day_09;
 mod day_10;
 mod day_11;
+mod day_12;
 mod boot_code;
 
 #[derive(PartialEq,Copy, Clone)]
@@ -32,6 +33,7 @@ pub fn get_solution(day:u8, part:Part, input:String) -> String {
         9 => day_09::solve(input, part),
         10 => day_10::solve(input, part),
         11 => day_11::solve(input, part),
+        12 => day_12::solve(input, part),
         _ => panic!("..."),
     }
 
