@@ -179,7 +179,7 @@ L.LLLLL.LL";
     }
 
 
-    //#[test]
+    #[test]
     fn test_part1() {
         let input = include_str!("../../input_11.txt");
 
@@ -188,7 +188,7 @@ L.LLLLL.LL";
         assert_eq!(2354,res);
     }
 
-    //#[test]
+    #[test]
     fn test_part2() {
         let input = include_str!("../../input_11.txt");
 
