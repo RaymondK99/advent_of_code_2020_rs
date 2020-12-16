@@ -12,18 +12,24 @@ pub fn solve(input : String, part: Part) -> String {
 }
 
 
-fn insert_number(number:i64, turn:i64, history:&mut Vec<i64>) {
-    history[number as usize] = turn;
+fn insert_number(number:i64, turn:i64, history:&mut Vec<[i64;2]>) {
+    if let Some(vec) = history.get_mut(number as usize) {
+        // Shift out oldest turn, insert new
+        vec[1] = vec[0];
+        vec[0] = turn;
+    } else {
+        panic!("...");
+    }
 }
 
-fn get_delta(number:i64, turn:i64, history:&[i64]) -> Option<i64> {
-    let prev_turn = history[number as usize];
-
-    if prev_turn > 0 {
-        Some(turn - prev_turn)
-    } else {
-        None
+fn get_delta(number:i64, history:&[[i64;2]]) -> Option<i64> {
+    if let Some(vec) = history.get(number as usize) {
+        if vec[0] > 0 && vec[1] > 0 {
+            return Some(vec[0] - vec[1])
+        }
     }
+
+    None
 }
 
 fn play_game(input:String, final_turn:i64) -> i64 {
@@ -31,11 +37,11 @@ fn play_game(input:String, final_turn:i64) -> i64 {
         .map(|s|s.trim().parse().ok().unwrap())
         .collect();
 
-    let mut history: Vec<i64> = Vec::with_capacity(final_turn as usize);
+    let mut history: Vec<[i64;2]> = Vec::with_capacity(final_turn as usize);
     let mut last_number = 0;
 
     for _ in 0..=final_turn {
-        history.push(0);
+        history.push([0,0]);
     }
 
     for turn in 1..=final_turn {
@@ -45,7 +51,7 @@ fn play_game(input:String, final_turn:i64) -> i64 {
             last_number = number;
         } else {
             // Perform remaining turns
-            if let Some(delta) = get_delta(last_number, turn,&history) {
+            if let Some(delta) = get_delta(last_number, &history) {
                 last_number = delta;
             } else {
                 last_number = 0;
