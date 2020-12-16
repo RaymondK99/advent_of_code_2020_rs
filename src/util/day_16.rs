@@ -91,10 +91,11 @@ fn get_rule_index(tickets:&Vec<&Vec<u64>>, rule:&Rule) -> HashSet<usize> {
     let mut set = HashSet::new();
 
     for &ticket in tickets.iter() {
+        let next_set = get_rule_index_list(ticket,rule);
+
         if set.is_empty() {
-            set = get_rule_index_list(ticket,rule);
+            set = set.union(&next_set).copied().collect();
         } else {
-            let next_set = get_rule_index_list(ticket,rule);
             set = set.intersection(&next_set).copied().collect();
         }
     }
