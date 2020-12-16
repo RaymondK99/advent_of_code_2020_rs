@@ -36,7 +36,7 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        let input = include_str!("../../input_12.txt");
+        let input = include_str!("../../input_17.txt");
         let res = part1(input.to_string());
         assert_eq!(1,res);
     }
@@ -50,7 +50,7 @@ mod tests {
 
     #[test]
     fn test_part2() {
-        let input = include_str!("../../input_12.txt");
+        let input = include_str!("../../input_17.txt");
         let res = part2(input.to_string());
         assert_eq!(2,res);
     }

@@ -1,5 +1,5 @@
 use super::Part;
-use std::collections::{HashSet, VecDeque};
+use std::collections::{VecDeque};
 
 
 pub fn solve(input : String, part: Part) -> String {
@@ -51,7 +51,7 @@ fn parse(input:String) -> (Vec<Rule>, Vec<u64>, Vec<Vec<u64>> ) {
 
     let your_ticket:Vec<u64> = sections[1].lines()
         .filter(|l|!l.starts_with("your")).into_iter().next().unwrap()
-        .split(",").map(|s|s.parse().unwrap()).collect();
+        .split(',').map(|s|s.parse().unwrap()).collect();
 
     (rules, your_ticket, tickets)
 }
@@ -63,7 +63,7 @@ fn part1(input:String) -> u64 {
 
     tickets.iter().for_each(|ticket|{
         ticket.iter().for_each(|num| {
-            if !rules.iter().map(|rule|rule.field_valid(*num)).fold(false,|acc,next| acc || next) {
+            if !rules.iter().any(|rule|rule.field_valid(*num)) {
                 sum += num;
             }
         })
@@ -72,14 +72,14 @@ fn part1(input:String) -> u64 {
 
 }
 
-fn is_ticket_valid(ticket:&Vec<u64>,rules:&Vec<Rule>) -> bool {
+fn is_ticket_valid(ticket:&[u64],rules:&[Rule]) -> bool {
     ticket.iter()
-        .map(|num| rules.iter().map(|rule| rule.field_valid(*num)).fold(false,|acc,next| acc || next) )
-        .fold(true, |acc, next| acc && next)
+        .map(|num| rules.iter().any(|rule| rule.field_valid(*num)) )
+        .all(|next| next)
 
 }
 
-fn get_rule_index_list(ticket:&Vec<u64>, rule:&Rule) -> Vec<usize> {
+fn get_rule_index_list(ticket:&[u64], rule:&Rule) -> Vec<usize> {
     ticket.iter()
         .enumerate()
         .filter(|&(_,num)| rule.field_valid(*num))
@@ -87,7 +87,7 @@ fn get_rule_index_list(ticket:&Vec<u64>, rule:&Rule) -> Vec<usize> {
         .collect()
 }
 
-fn get_rule_index(tickets:&Vec<&Vec<u64>>, rule:&Rule) -> Vec<usize> {
+fn get_rule_index(tickets:&[&Vec<u64>], rule:&Rule) -> Vec<usize> {
     let mut set = vec![];
 
     for &ticket in tickets.iter() {
@@ -128,7 +128,7 @@ fn part2(input:String, filter_expr:&str) -> u64 {
 
         // Distinct matched rule
         if set.len() == 1 {
-            let col_number = set.iter().next().unwrap();
+            let col_number = set.get(0).unwrap();
             rule_candidates.iter_mut().for_each(|(s,_)| {
                 for i in 0..s.len() {
                     if s[i] == *col_number {
@@ -145,7 +145,7 @@ fn part2(input:String, filter_expr:&str) -> u64 {
 
     matched_rules.iter()
         .filter(|(_,r)|r.name.starts_with(filter_expr))
-        .map(|(index,_)| your_ticket[*index]).fold(1, |acc, next| acc * next)
+        .map(|(index,_)| your_ticket[*index]).product()
 }
 
 #[cfg(test)]
