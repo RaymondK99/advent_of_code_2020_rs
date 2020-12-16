@@ -79,7 +79,7 @@ fn is_ticket_valid(ticket:&Vec<u64>,rules:&Vec<Rule>) -> bool {
 
 }
 
-fn get_rule_index_list(ticket:&Vec<u64>, rule:&Rule) -> HashSet<usize> {
+fn get_rule_index_list(ticket:&Vec<u64>, rule:&Rule) -> Vec<usize> {
     ticket.iter()
         .enumerate()
         .filter(|&(_,num)| rule.field_valid(*num))
@@ -87,16 +87,22 @@ fn get_rule_index_list(ticket:&Vec<u64>, rule:&Rule) -> HashSet<usize> {
         .collect()
 }
 
-fn get_rule_index(tickets:&Vec<&Vec<u64>>, rule:&Rule) -> HashSet<usize> {
-    let mut set = HashSet::new();
+fn get_rule_index(tickets:&Vec<&Vec<u64>>, rule:&Rule) -> Vec<usize> {
+    let mut set = vec![];
 
     for &ticket in tickets.iter() {
         let next_set = get_rule_index_list(ticket,rule);
 
         if set.is_empty() {
-            set = set.union(&next_set).copied().collect();
+            next_set.iter().for_each(|item| {set.push(*item);});
         } else {
-            set = set.intersection(&next_set).copied().collect();
+            let mut tmp_set = vec![];
+            set.iter().for_each(|item|{
+                if next_set.contains(item) {
+                    tmp_set.push(*item);
+                }
+            });
+            set = tmp_set;
         }
     }
 
@@ -111,7 +117,7 @@ fn part2(input:String, filter_expr:&str) -> u64 {
         .collect();
 
 
-    let mut rule_candidates:VecDeque<(HashSet<usize>, &Rule)> = rules.iter()
+    let mut rule_candidates:VecDeque<(Vec<usize>, &Rule)> = rules.iter()
         .map(|rule| (get_rule_index(&valid_tickets,rule),rule))
         .collect();
 
@@ -123,7 +129,14 @@ fn part2(input:String, filter_expr:&str) -> u64 {
         // Distinct matched rule
         if set.len() == 1 {
             let col_number = set.iter().next().unwrap();
-            rule_candidates.iter_mut().for_each(|(s,_)| {s.remove(col_number);});
+            rule_candidates.iter_mut().for_each(|(s,_)| {
+                for i in 0..s.len() {
+                    if s[i] == *col_number {
+                        s.remove(i);
+                        break;
+                    }
+                }
+            });
             matched_rules.push((*col_number, rule));
         } else {
             rule_candidates.push_back((set, rule));
