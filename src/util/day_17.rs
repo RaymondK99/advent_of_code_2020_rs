@@ -76,6 +76,14 @@ fn parse(input:&str) -> HashMap<Pos,char> {
 fn mutate(map:&mut HashMap<Pos,char>, part:Part) {
     let mut num_active_map = HashMap::new();
 
+    // Initiate map of currently active neighbors with '0' for active cubes
+    map.iter()
+        .filter(|&(_,ch)| *ch == '#')
+        .map(|(pos,_)| pos)
+        .for_each(|&pos| {
+            num_active_map.insert(pos, 0);
+        });
+
     // Get all cubes that should increment its active neighbor count
     map.iter()
         .filter(|&(_,ch)| *ch == '#')
@@ -94,20 +102,10 @@ fn mutate(map:&mut HashMap<Pos,char>, part:Part) {
                 }
         });
 
-    // Generate list of currently active
-    map.iter()
-        .filter(|&(_,ch)| *ch == '#')
-        .map(|(pos,_)| pos)
-        .for_each(|&pos| {
-            if !num_active_map.contains_key(&pos) {
-                num_active_map.insert(pos, 0);
-            }
-        });
-
 
     // Update map
     for (pos,num_active) in num_active_map.iter() {
-        if *num_active == 2{
+        if *num_active == 2 {
             // Skip
             continue;
         }
