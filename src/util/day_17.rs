@@ -74,9 +74,10 @@ fn parse(input:&str) -> HashMap<Pos,char> {
 
 
 fn mutate(map:&mut HashMap<Pos,char>, part:Part) {
+    let mut num_active_map = HashMap::new();
 
     // Get all cubes that should increment its active neighbor count
-    let active_plus_one:Vec<Pos> = map.iter()
+    map.iter()
         .filter(|&(_,ch)| *ch == '#')
         .flat_map(|(p,_)| {
             if part == Part1 {
@@ -85,29 +86,24 @@ fn mutate(map:&mut HashMap<Pos,char>, part:Part) {
                 p.get_neighbors_4d()
             }
         })
-        .collect();
+        .for_each(|pos| {
+                if let Some(entry) = num_active_map.get_mut(&pos) {
+                    *entry += 1;
+                } else {
+                    num_active_map.insert(pos, 1);
+                }
+        });
 
     // Generate list of currently active
-    let currently_active:Vec<&Pos> = map.iter()
+    map.iter()
         .filter(|&(_,ch)| *ch == '#')
         .map(|(pos,_)| pos)
-        .collect();
+        .for_each(|&pos| {
+            if !num_active_map.contains_key(&pos) {
+                num_active_map.insert(pos, 0);
+            }
+        });
 
-
-    let mut num_active_map = HashMap::new();
-    active_plus_one.iter().for_each(|pos| {
-        if let Some(entry) = num_active_map.get_mut(pos) {
-            *entry += 1;
-        } else {
-            num_active_map.insert(*pos, 1);
-        }
-    });
-
-    currently_active.iter().for_each(|&pos| {
-       if !num_active_map.contains_key(pos) {
-           num_active_map.insert(*pos, 0);
-       }
-    });
 
     // Update map
     for (pos,num_active) in num_active_map.iter() {
