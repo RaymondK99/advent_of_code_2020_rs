@@ -49,8 +49,6 @@ fn compute(mut terms:VecDeque<String>,part:Part) -> i64 {
         while reduce(&mut terms,false) {
             //println!("    ===> {:?}", terms);
         }
-
-        terms.front().unwrap().parse().ok().unwrap()
     } else {
 
         let mut can_reduce = true;
@@ -64,9 +62,8 @@ fn compute(mut terms:VecDeque<String>,part:Part) -> i64 {
                 //println!("      ===> {:?}", terms);
             }
         }
-
-        terms.front().unwrap().parse().ok().unwrap()
     }
+    terms.front().unwrap().parse().ok().unwrap()
 }
 
 fn reduce(terms:&mut VecDeque<String>, only_plus:bool) -> bool {
