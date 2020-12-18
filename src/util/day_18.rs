@@ -116,6 +116,7 @@ fn reduce(terms:&mut VecDeque<String>, only_plus:bool) -> bool {
             terms.push_front(num_str);
             break;
         } else if term1_is_digit && term2_is_digit && (terms[1].eq("+") || (terms[1].eq("*") && !only_plus)) {
+            // -> number +/* number -> number
             let lh:i64 = terms.pop_front().unwrap().parse().ok().unwrap();
             let op = terms.pop_front().unwrap();
             let rh:i64 = terms.pop_front().unwrap().parse().ok().unwrap();
@@ -128,14 +129,17 @@ fn reduce(terms:&mut VecDeque<String>, only_plus:bool) -> bool {
             terms.push_front(tmp_res.to_string());
             break;
         } else {
+            // Try next...
             tmp.push_back(terms.pop_front().unwrap());
         }
     }
 
+    // Restore it...
     while tmp.is_empty() == false {
         terms.push_front(tmp.pop_back().unwrap());
     }
 
+    // Did we reduce something?
     len != terms.len()
 }
 
