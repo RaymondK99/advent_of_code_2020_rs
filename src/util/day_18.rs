@@ -73,21 +73,20 @@ fn reduce(terms:&mut VecDeque<String>, only_plus:bool) -> bool {
     let mut tmp = VecDeque::new();
     let len = terms.len();
 
-    let mut stack = VecDeque::new();
     let mut max_depth = 0;
+    let mut curr_depth = 0;
+
     terms.iter()
         .for_each(|c| {
             if c.as_str().eq("(") {
-                stack.push_front(c);
+                curr_depth += 1;
             } else if c.as_str().eq(")") {
-                stack.pop_front();
+                curr_depth -= 1;
             }
 
-            max_depth = max(stack.len(), max_depth);
+            max_depth = max(curr_depth, max_depth);
         });
 
-
-    let mut curr_depth = 0;
 
     while terms.len() > 2 {
         let term1_is_digit = terms[0].chars().all(|c| c.is_ascii_digit());
