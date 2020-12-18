@@ -1,6 +1,7 @@
 use super::Part;
 use std::collections::VecDeque;
 use util::Part::{Part1, Part2};
+use std::cmp::max;
 
 
 pub fn solve(input : String, part: Part) -> String {
@@ -42,6 +43,8 @@ fn parse(expr:String) -> VecDeque<String> {
 }
 
 fn compute(mut terms:VecDeque<String>,part:Part) -> i64 {
+    //println!("      ===> {:?}", terms);
+
     if part == Part1 {
         while reduce(&mut terms,false) {
             //println!("    ===> {:?}", terms);
@@ -53,11 +56,13 @@ fn compute(mut terms:VecDeque<String>,part:Part) -> i64 {
         let mut can_reduce = true;
         while can_reduce {
             while reduce(&mut terms, true) {
-                //println!("   (+) ===> {:?}", terms);
+                //println!("  (+) ===> {:?}", terms);
             }
 
             can_reduce = reduce(&mut terms, false);
-            //println!("    ===> {:?}", terms);
+            if !can_reduce {
+                //println!("      ===> {:?}", terms);
+            }
         }
 
         terms.front().unwrap().parse().ok().unwrap()
@@ -68,7 +73,20 @@ fn reduce(terms:&mut VecDeque<String>, only_plus:bool) -> bool {
     let mut tmp = VecDeque::new();
     let len = terms.len();
 
-    let max_depth = terms.iter().filter(|c| c.as_str().eq("(")).count();
+    let mut stack = VecDeque::new();
+    let mut max_depth = 0;
+    terms.iter()
+        .for_each(|c| {
+            if c.as_str().eq("(") {
+                stack.push_front(c);
+            } else if c.as_str().eq(")") {
+                stack.pop_front();
+            }
+
+            max_depth = max(stack.len(), max_depth);
+        });
+
+
     let mut curr_depth = 0;
 
     while terms.len() > 2 {
@@ -77,6 +95,8 @@ fn reduce(terms:&mut VecDeque<String>, only_plus:bool) -> bool {
 
         if terms[0].eq("(") {
             curr_depth += 1;
+        } else if terms[0].eq(")") {
+            curr_depth -= 1;
         }
 
         if curr_depth < max_depth {

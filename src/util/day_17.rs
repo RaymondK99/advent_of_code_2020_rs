@@ -61,7 +61,7 @@ impl Pos {
 }
 
 fn parse(input:&str) -> HashMap<Pos,char> {
-    let mut map = HashMap::new();
+    let mut map = HashMap::with_capacity(2000);
 
     input.lines()
         .enumerate()
@@ -74,7 +74,7 @@ fn parse(input:&str) -> HashMap<Pos,char> {
 
 
 fn mutate(map:&mut HashMap<Pos,char>, part:Part) {
-    let mut num_active_map = HashMap::new();
+    let mut num_active_map = HashMap::with_capacity(2000);
 
     // Initiate map of currently active neighbors with '0' for active cubes
     map.iter()
