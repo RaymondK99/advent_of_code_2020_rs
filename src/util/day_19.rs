@@ -87,25 +87,9 @@ impl Graph {
     }
 
     fn match_branch(&self,branches:&Vec<Vec<&str>>, rule_list:&Vec<usize>, cached_result:&mut HashMap<(usize,String),bool>) -> bool {
-        let mut any_branch_match = false;
-        for branch in branches.iter() {
-            let mut branch_matches = true;
-            for index in 0..rule_list.len() {
-                //println!("rule_list:{:?}, branch {:?}", rule_list, branch);
-                branch_matches = branch_matches && self.search_internal(rule_list[index], branch[index], cached_result);
-                if !branch_matches {
-                    break;
-                }
-            }
-
-            if branch_matches {
-                // If any branch, matches, we can stop here...
-                any_branch_match = true;
-                break;
-            }
-        }
-
-        any_branch_match
+        branches.iter()
+            .any( |branch| { (0..branch.len()).into_iter()
+                .all( |index| self.search_internal(rule_list[index], branch[index], cached_result)) })
     }
 
 
@@ -163,17 +147,16 @@ impl Rule {
 fn parse(input:String) -> (HashMap<usize, Rule>, Vec<String>) {
     let mut it = input.split("\n\n").into_iter();
     let rules = it.next().unwrap();
-    let _data = it.next().unwrap();
+    let data = it.next().unwrap();
 
     let mut rule_list:Vec<Rule> = rules.lines().map(|line| Rule::parse(line)).collect();
     let mut rule_map = HashMap::new();
-
 
     for rule in rule_list {
         rule_map.insert(rule.number, rule);
     }
 
-    (rule_map,_data.lines().map(|l|l.to_string()).collect())
+    (rule_map, data.lines().map(|l|l.to_string()).collect())
 }
 
 
