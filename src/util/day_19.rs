@@ -29,7 +29,6 @@ impl Condition {
             let cond2:Vec<usize> = it.next().unwrap().trim().split_ascii_whitespace().map(|s|s.parse().ok().unwrap()).collect();
 
             Condition::MatchesOr(cond1,cond2)
-
         } else {
             let conditions:Vec<usize> =  input.trim().split_ascii_whitespace().map(|s|s.parse().ok().unwrap()).collect();
             Condition::MatchesRules(conditions)
@@ -140,7 +139,6 @@ impl Rule {
         let condition = Condition::parse(it.next().unwrap());
         Rule{number,condition}
     }
-
 }
 
 
@@ -149,12 +147,11 @@ fn parse(input:String) -> (HashMap<usize, Rule>, Vec<String>) {
     let rules = it.next().unwrap();
     let data = it.next().unwrap();
 
-    let mut rule_list:Vec<Rule> = rules.lines().map(|line| Rule::parse(line)).collect();
     let mut rule_map = HashMap::new();
+    rules.lines()
+         .map(|line| Rule::parse(line))
+         .for_each(|rule| {rule_map.insert(rule.number, rule);});
 
-    for rule in rule_list {
-        rule_map.insert(rule.number, rule);
-    }
 
     (rule_map, data.lines().map(|l|l.to_string()).collect())
 }
@@ -163,7 +160,7 @@ fn parse(input:String) -> (HashMap<usize, Rule>, Vec<String>) {
 
 fn part1(input:String) -> usize {
     let (rules,data) = parse(input.to_string());
-    let mut graph = Graph::new(rules);
+    let graph = Graph::new(rules);
 
     data.iter().filter(|line| graph.search(0, line.as_str())).count()
 }
@@ -209,7 +206,7 @@ aaabbb
 aaaabbb"#;
 
         let (rules,_) = parse(input.to_string());
-        let mut graph = Graph::new(rules);
+        let graph = Graph::new(rules);
 
         assert_eq!(true,graph.search(0,"ababbb"));
         assert_eq!(true,graph.search(1,"aaab"));
@@ -241,7 +238,7 @@ aaabbb
 aaaabbb"#;
 
         let (rules,_) = parse(input.to_string());
-        let mut graph = Graph::new(rules);
+        let graph = Graph::new(rules);
 
         assert_eq!(true, graph.search(3, "ab"));
         assert_eq!(true, graph.search(3, "ba"));
@@ -276,7 +273,7 @@ aaabbb
 aaaabbb"#;
 
         let (rules,_) = parse(input.to_string());
-        let mut graph = Graph::new(rules);
+        let graph = Graph::new(rules);
 
         assert_eq!(false, graph.search(5, "a"));
         assert_eq!(true, graph.search(4, "a"));
@@ -309,7 +306,7 @@ aaaabbb"#;
 
     #[test]
     fn test_part1() {
-        let input = include_str!("../../input_19.txt");
+        let _input = include_str!("../../input_19.txt");
 
         //assert_eq!(224,part1(input.to_string()));
     }
@@ -424,7 +421,7 @@ aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba"#;
 
     #[test]
     fn test_part2() {
-        let input = include_str!("../../input_19.txt");
+        let _input = include_str!("../../input_19.txt");
 
         //assert_eq!(2,part2(input.to_string()));
     }
