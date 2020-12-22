@@ -1,6 +1,7 @@
 use super::Part;
 use std::collections::{VecDeque, HashSet};
 use util::Part::{Part2, Part1};
+use std::hash::Hash;
 
 pub fn solve(input : String, part: Part) -> String {
 
@@ -53,35 +54,34 @@ impl GameState {
 
 
 fn play_game(mut game_state:GameState, mut _round:usize, part:Part) -> (bool,usize) {
-    let mut configutations = HashSet::new();
+    let mut player_one_cache:HashSet<VecDeque<usize>> = HashSet::new();
+    let mut player_two_cache:HashSet<VecDeque<usize>> = HashSet::new();
 
 
     while !game_state.game_ends() {
+
+        // Is this configuration already played?
+        if part == Part2 && (player_one_cache.contains(&game_state.player_one) || player_two_cache.contains(&game_state.player_two)) {
+            // Player one wins
+            return (true, game_state.score_player(&game_state.player_one))
+        }
 
         let game_state_before = game_state.clone();
 
         let player_one_card = game_state.player_one.pop_front().unwrap();
         let player_two_card = game_state.player_two.pop_front().unwrap();
 
-        // Is this configuration already played?
-        let player_one_wins = if part == Part2 && configutations.contains(&game_state_before)  {
-            // Player one wins
-            return (true, game_state.score_player(&game_state_before.player_one))
+        // Recursive game
+        let player_one_wins = if part == Part2 && player_one_card <= game_state.player_one.len() && player_two_card <= game_state.player_two.len() {
+            let mut game_state_rec = game_state.clone();
+            game_state_rec.player_one.resize(player_one_card, 0);
+            game_state_rec.player_two.resize(player_two_card, 0);
+
+            let (player_one_wins, _) = play_game(game_state_rec, 1, Part2);
+            player_one_wins
         } else {
-
-            // Recursive game
-            if part == Part2 && player_one_card <= game_state.player_one.len() && player_two_card <= game_state.player_two.len() {
-                let mut game_state_rec = game_state.clone();
-                game_state_rec.player_one.resize(player_one_card,0);
-                game_state_rec.player_two.resize(player_two_card, 0);
-
-                let (player_one_wins, _) = play_game(game_state_rec, 1, Part2);
-
-                player_one_wins
-            } else {
-                // Normal game
-                player_one_card > player_two_card
-            }
+            // Normal game
+            player_one_card > player_two_card
         };
 
         if player_one_wins {
@@ -92,7 +92,8 @@ fn play_game(mut game_state:GameState, mut _round:usize, part:Part) -> (bool,usi
             game_state.player_two.push_back(player_one_card);
         }
 
-        configutations.insert(game_state_before);
+        player_one_cache.insert(game_state_before.player_one);
+        player_two_cache.insert(game_state_before.player_two);
         _round += 1;
     }
 
@@ -175,7 +176,7 @@ Player 2:
         assert_eq!(105,part2(input));
     }
 
-    //#[test]
+    #[test]
     fn test_part2() {
         let input = include_str!("../../input_22.txt");
 
