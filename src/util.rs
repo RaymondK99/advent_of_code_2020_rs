@@ -24,7 +24,7 @@ mod day_23;
 mod day_24;
 mod day_25;
 
-mod day_20_2;
+//mod day_20_2;
 
 
 
