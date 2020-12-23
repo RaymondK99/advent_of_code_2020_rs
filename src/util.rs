@@ -24,6 +24,8 @@ mod day_23;
 mod day_24;
 mod day_25;
 
+mod day_20_2;
+
 
 
 mod boot_code;
@@ -57,7 +59,7 @@ pub fn get_solution(day:u8, part:Part, input:String) -> String {
         17 => day_17::solve(input, part),
         18 => day_18::solve(input, part),
         19 => day_19::solve(input, part),
-        20 => day_20::solve(input, part),
+        20 => day_20_2::solve(input, part),
         21 => day_21::solve(input, part),
         22 => day_22::solve(input, part),
         23 => day_23::solve(input, part),
