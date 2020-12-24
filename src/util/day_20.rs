@@ -128,17 +128,6 @@ impl Grid {
         panic!("No solution")
     }
 
-    fn print_grid(&self) {
-        println!("---------------------");
-        for y in 0..self.final_grid.len() {
-            let v = &self.final_grid[y];
-            for x in 0..v.len() {
-                print!("{}",v[x]);
-            }
-            println!("");
-        }
-    }
-
     fn get_grid_set(&self) -> HashSet<(usize,usize)> {
         let mut grid_set = HashSet::new();
         for y in 0..self.final_grid.len() {
@@ -193,9 +182,7 @@ impl Grid {
 
 
     fn get_next_tiles(&self, acc:&Vec<Tile>) -> Vec<&Tile> {
-        let prev_tile = acc.last().unwrap();
-
-        self.tiles.values().filter(|t| /* t.matches(prev_tile) &&*/ acc.iter().find(|p| p.number == t.number).is_none()).collect()
+        self.tiles.values().filter(|t| acc.iter().find(|p| p.number == t.number).is_none()).collect()
     }
 
 
@@ -330,9 +317,7 @@ impl Tile {
         tile
     }
 
-    fn desc(&self) -> String {
-        format!("[id:{}, state={}]", self.number, self.state % 8)
-    }
+
     fn left(&self) -> Vec<char> {
         (0..self.side).into_iter().map(|y|self.grid[y][0]).collect()
     }
