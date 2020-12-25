@@ -82,41 +82,40 @@ fn build_floor(input:&str) -> HashMap<Pos,char> {
             map.insert(pos,'b');
         }
     }
+
     map
 }
 
 fn mutate(map:&mut HashMap<Pos,char>) {
-    let mut m = HashMap::new();
+    let mut adjacent_black_count = HashMap::new();
 
     // Insert initial 0 count for all black tiles
     map.iter().filter(|(_,&v)|v == 'b').for_each(|(k,_)| {
-        m.insert(k.clone(), 0);
+        adjacent_black_count.insert(k.clone(), 0);
     });
 
     // Add a count for all black tiles neighbors
     map.iter().filter(|(_,&v)|v == 'b').for_each(| (pos, _) | {
         for n in pos.neighbors().iter() {
-            if let Some(count) = m.get_mut(n) {
+            if let Some(count) = adjacent_black_count.get_mut(n) {
                 *count += 1;
             } else {
-                m.insert(n.clone(),1);
+                adjacent_black_count.insert(n.clone(), 1);
             }
         }
     });
 
 
-    m.iter().for_each(|(pos, count)| {
+    adjacent_black_count.iter().for_each(|(pos, count)| {
        if let Some(color) = map.get_mut(pos) {
            if *color == 'b' && ( *count == 0 || *count > 2) {
                *color = 'w';
            } else if *color == 'w' && *count == 2 {
                *color = 'b';
            }
-       } else {
+       } else if *count == 2 {
            // Unknown tile is white, flip it to black
-           if *count == 2 {
-               map.insert(pos.clone(), 'b');
-           }
+           map.insert(pos.clone(), 'b');
        }
     });
 }

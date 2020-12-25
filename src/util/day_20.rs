@@ -230,7 +230,7 @@ impl Grid {
             }
         }
 
-        //println!("Solution index:{}, tiles={:?}",index, result.iter().map(|t|t.desc()).collect::<Vec<String>>());
+        //println!("Solution index:{}, tiles={:?}",index, result.iter().map(|t|t.number.to_string()).collect::<Vec<String>>());
 
         if index == 0 {
             let corner_tiles = self.get_matching_tiles(2);
